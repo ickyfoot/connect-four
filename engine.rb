@@ -1,6 +1,6 @@
 require_relative '../shared/people/person'
 
-class IOUtil
+class Engine
 	def initialize
 	end
 	
