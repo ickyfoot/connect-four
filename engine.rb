@@ -1,49 +1,33 @@
-require_relative '../shared/people/person'
+require_relative 'player'
 
 class Engine
+	playerCount = 0
+	@@playerOne
+	@@playerTwo
+	
+	attr_accessor :playerOne, :playerTwo
+	
 	def initialize
+		@@playerOne = Player.new
+		@@playerTwo = Player.new
 	end
 	
-	def collectInfo(greet=true)
-		if (greet)
-			puts "\nHello, and welcome!\n\n"\
-				"Please provide a little information to get started.\n\n"
-		end
-		puts "What's your first name?"
-		firstName = gets
-		firstName = firstName.chomp
-		
-		puts "And, your last name?"
-		lastName = gets
-		lastName = lastName.chomp
-		
-		puts "What about your birthday?"
-		birthday = gets
-		birthday = birthday.chomp
-		
-		puts "Please confirm the following information:"
-		puts "Name: "+firstName+" "+lastName
-		puts "Birthday: "+birthday
-		puts "Is this correct? Y/N"
-		
-		confirmed = gets
-		confirmed = confirmed.chop
-		
-		if (confirmed == "Y")
-			person = Person.new(firstName,lastName,birthday)
-			person.saveInfo
-			person.greet
-			person.calculateAge
-			person.getAge
-			puts person.countPeople
-		else
-			puts "OK, let's try again."
-			collectInfo(false)
+	def startGame
+		puts "Hello, and welcome to Connect Four! \n\n"\
+			"Would you like to start a new game? Y/N"
+		confirm = gets
+		confirm = confirm.chomp
+		if (confirm == "Y")
+			puts "Great! You need to players to play"\
+				"Connect Four. \n\nPlease enter info"\
+				"for Player 1."
+			@@playerOne.collectInfo
+			@@playerTwo.collectInfo
 		end
 	end
 end
 
 if __FILE__ == $0
-	iou = Engine.new
-	iou.collectInfo
+	engine = Engine.new
+	engine.startGame
 end
