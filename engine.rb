@@ -44,6 +44,6 @@ class Engine
 end
 
 if __FILE__ == $0
-	iou = IOUtil.new
+	iou = Engine.new
 	iou.collectInfo
 end
