@@ -6,15 +6,11 @@ class Player < Person
 	@p_id
 	@username
 	@color # red or yellow, oldest player chooses
-	@piecesRemaining
+	@piecesRemaining = 21
 	
-	attr_accessor :color
+	attr_accessor :color, :username
 	
-	def initialize
-	end
-	
-	def playPiece
-	end
+	def initialize; end
 	
 	def collectInfo
 		puts "What's your first name?"
@@ -49,4 +45,6 @@ class Player < Person
 			return self.collectInfo
 		end
 	end
+	
+	def playPiece; end
 end
