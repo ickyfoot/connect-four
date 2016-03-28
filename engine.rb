@@ -1,15 +1,14 @@
 require_relative 'player'
 
 class Engine
-	playerCount = 0
-	@@playerOne
-	@@playerTwo
+	@game
+	@players
+	@colors
 	
-	attr_accessor :playerOne, :playerTwo
+	attr_accessor :players, :colors
 	
 	def initialize
-		@@playerOne = Player.new
-		@@playerTwo = Player.new
+		@colors = Array['yellow','red']
 	end
 	
 	def startGame
@@ -18,16 +17,56 @@ class Engine
 		confirm = gets
 		confirm = confirm.chomp
 		if (confirm == "Y")
-			puts "Great! You need to players to play"\
-				"Connect Four. \n\nPlease enter info"\
-				"for Player 1."
-			@@playerOne.collectInfo
-			@@playerTwo.collectInfo
+			@players = Array.new
+			playerOne = Player.new
+			playerTwo = Player.new
+			
+			puts "Great! You need two players to play"\
+				" Connect Four. \n\nPlease enter info"\
+				" for Player 1."
+			playerOneReady = playerOne.collectInfo
+			
+			puts "And, now enter info for Player 2."
+			playerTwoReady = playerTwo.collectInfo
+			
+			if (playerOneReady && playerTwoReady)
+				if (playerOne.age < playerTwo.age)
+					@players.push(playerOne).push(playerTwo)
+				else
+					@players.push(playerTwo).push(playerOne)
+				end
+			end
+			puts @players[0].firstName+" is youngest and goes first."
+			puts @players[1].firstName+" is oldest and gets to choose "\
+			"a color. "+@players[1].firstName+", please choose yellow "\
+			"or red:"
+			chooseColor
 		end
+	end # end startGame
+	
+	def chooseColor
+		playerOneColor = gets
+		playerOneColor = playerOneColor.chomp
+		if (@colors.index playerOneColor)
+			@players[1].color = playerOneColor
+			@players[0].color = if playerOneColor == 'red' then 'yellow'
+				else 'red'
+			end
+			puts @players[1].firstName+" chose "+@players[1].color+" "\
+			"so "+@players[0].firstName+" is "+@players[0].color+"."
+		else
+			puts 'You must choose "yellow" or "red":'
+			chooseColor
+		end
+	end
+	
+	def endGame
+		
 	end
 end
 
 if __FILE__ == $0
 	engine = Engine.new
+	Person.clearPeople
 	engine.startGame
 end
