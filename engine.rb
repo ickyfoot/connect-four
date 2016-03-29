@@ -1,4 +1,5 @@
 require_relative 'player'
+require_relative 'ui_manager'
 require 'gtk3'
 
 class Engine
@@ -8,18 +9,20 @@ class Engine
 	@players
 	@colors
 	@window
+	@uiManager
 	
 	attr_accessor :players, :colors
 	
 	def initialize
 		@colors = Array['yellow','red']
 		connect_four = Gtk::Application.new(
-		'com.github.ickyfoot.connect_four', :flags_none)
+			'com.github.ickyfoot.connect_four',
+			:flags_none
+		)
+		@uiManager = UIManager.new
+		
 		connect_four.signal_connect "activate" do |application|
-			@window = Gtk::ApplicationWindow.new(application)
-			@window.set_title("Connect Four")
-			@window.set_default_size(400,400)
-			@window.set_border_width(10)
+			@window = @uiManager.newWindow(application)
 			startGame
 		end
 		
