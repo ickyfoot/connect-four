@@ -7,6 +7,66 @@ class UIManager
 	def initialize
 	end
 	
+	def finalizePlayerSetup(finalizeSetupLabelText, colors, players)
+		finalizeSetupBox = Gtk::Box.new(:vertical,10)
+		finalizeSetupLabel = Gtk::Label.new(
+			finalizeSetupLabelText
+		)
+		finalizeSetupColorEntry = Gtk::Entry.new
+		finalizeSetupColorSubmit = Gtk::Button('Submit')
+		finalizeSetupBox.pack_start(
+			finalizeSetupLabel,
+			false
+		)
+		finalizeSetupBox.pack_start(
+			finalizeSetupColorEntry,
+			false
+		)
+		finalizeSetupBox.pack_start(
+			finalizeSetupColorSubmit,
+			false
+		)
+		
+		@window.add(finalizeSetupBox)
+		@window.show_all
+		
+		finalizeSetupColorSubmit.signal_connect "clicked" do
+			if (colors.index finalizeSetupColorSubmit.text)
+				md = Gtk::MessageDialog.new(
+					:parent => nil, 
+					:flags => :destroy_with_parent,
+					:type => :info, 
+					:buttons_type => :none, 
+					:message => "Are you sure you would like to be"+
+						finalizeSetupColorSubmit.text
+				)
+				md.add_button('Confirm',Gtk::ResponseType::ACCEPT)
+				md.add_button('Change',Gtk::ResponseType::REJECT)
+				response = md.run
+				
+				if (response == Gtk::ResponseType::ACCEPT)
+					players[0].color = finalizeSetupColorSubmit.text
+					players[1].color = if 
+						finalizeSetupColorSubmit.text == 
+						'red' then 'yellow' else 'red' end
+					@window.remove(finalizeSetupBox)
+				end
+			else
+				md = Gtk::MessageDialog.new(
+					:parent => nil, 
+					:flags => :destroy_with_parent,
+					:type => :info, 
+					:buttons_type => :none, 
+					:message => "You must choose either "+colors[0]+
+								"or "+colors[1]
+				)
+				md.add_button('Confirm',Gtk::ResponseType::ACCEPT)
+				md.add_button('Change',Gtk::ResponseType::REJECT)
+			end
+			md.destroy
+		end
+	end
+	
 	def newWindow(application)
 		@window = Gtk::ApplicationWindow.new(application)
 		@window.set_title("Connect Four")

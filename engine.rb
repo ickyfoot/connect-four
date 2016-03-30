@@ -24,7 +24,6 @@ class Engine
 		
 		connect_four.signal_connect "activate" do |application|
 			@uiManager.newWindow(application)
-			startGame
 		end
 		
 		connect_four.run
@@ -77,45 +76,36 @@ class Engine
 				@uiManager.setupPlayerSetupBox(@playerTwo,2,
 					method(:setPlayerReady))
 			else
-				@playerOne.saveInfo
-				@playerOne.calculateAge
+				@playerTwo.saveInfo
+				@playerTwo.calculateAge
 				@playerTwoReady = status
+				finalizePlayerSetup = ""
 				if (@playerOneReady && @playerTwoReady)
-					if (playerOne.age < playerTwo.age)
-						puts 'one is older'
-						@players.push(playerOne).push(playerTwo)
+					if (@playerOne.age > @playerTwo.age)
+						@players.push(@playerOne).push(@playerTwo)
+						finalizeSetupLabelText = 
+							"Player 2 is youngest and goes first. "\
+							"Player 1 gets to choose their color "\
+							"(yellow or red)"
 					else
-						puts 'two is older'
-						@players.push(playerTwo).push(playerOne)
+						@players.push(@playerTwo).push(@playerOne)
+						finalizeSetupLabelText = 
+							"Player 1 is youngest and goes first. "\
+							"Player 2 gets to choose their color "\
+							"(yellow or red)"
+							
 					end
+					@uiManager.finalizePlayerSetup(
+						finalizeSetupLabelText,
+						@colors,
+						@players
+					)
 				end
 			end
 		end
 		
 		@uiManager.setupPlayerSetupBox(@playerOne,1,
 			method(:setPlayerReady))
-			
-		#@uiManager.setupPlayerSetupBox(playerTwo,2)
-		
-		#puts "Great! You need two players to play"\
-		#	" Connect Four. \n\nPlease enter info"\
-		#	" for Player 1."
-		#playerOneReady = playerOne.collectInfo(1, @uiManager)
-		
-		#puts "And, now enter info for Player 2."
-		#playerTwoReady = playerTwo.collectInfo(2, @uiManager)
-		
-		#if (playerOneReady && playerTwoReady)
-		#	if (playerOne.age < playerTwo.age)
-		#		@players.push(playerOne).push(playerTwo)
-		#	else
-		#		@players.push(playerTwo).push(playerOne)
-		#	end
-		#end
-		#puts @players[0].firstName+" is youngest and goes first."
-		#puts @players[1].firstName+" is oldest and gets to choose "\
-		#"a color. "+@players[1].firstName+", please choose yellow "\
-		#"or red:"
 		#chooseColor
 	end
 	
@@ -127,6 +117,5 @@ end
 
 if __FILE__ == $0
 	engine = Engine.new
-	# Person.clearPeople
-	# engine.startGame
+	engine.startGame
 end
