@@ -7,8 +7,9 @@ class Engine
 	@gameName
 	@turnCount
 	@players
+	@playerOne
+	@playerTwo
 	@colors
-	@window
 	@uiManager
 	
 	attr_accessor :players, :colors
@@ -22,11 +23,11 @@ class Engine
 		@uiManager = UIManager.new
 		
 		connect_four.signal_connect "activate" do |application|
-			@window = @uiManager.newWindow(application)
+			@uiManager.newWindow(application)
 			startGame
 		end
 		
-		puts connect_four.run
+		connect_four.run
 	end
 	
 	def nextTurn; end
@@ -61,105 +62,67 @@ class Engine
 	
 	def playerSetup
 		@players = Array.new
-		playerOne = Player.new
-		playerTwo = Player.new
+		@playerOne = Player.new
+		@playerTwo = Player.new
+		@playerOneReady = false
+		@playerTwoReady = false
 		
-		puts "Great! You need two players to play"\
-			" Connect Four. \n\nPlease enter info"\
-			" for Player 1."
-		playerOneReady = playerOne.collectInfo
+		Person.clearPeople
 		
-		puts "And, now enter info for Player 2."
-		playerTwoReady = playerTwo.collectInfo
-		
-		if (playerOneReady && playerTwoReady)
-			if (playerOne.age < playerTwo.age)
-				@players.push(playerOne).push(playerTwo)
+		def setPlayerReady(playerNumber, status)
+			if playerNumber == 1
+				@playerOne.saveInfo
+				@playerOne.calculateAge
+				@playerOneReady = status
+				@uiManager.setupPlayerSetupBox(@playerTwo,2,
+					method(:setPlayerReady))
 			else
-				@players.push(playerTwo).push(playerOne)
+				@playerOne.saveInfo
+				@playerOne.calculateAge
+				@playerTwoReady = status
+				if (@playerOneReady && @playerTwoReady)
+					if (playerOne.age < playerTwo.age)
+						puts 'one is older'
+						@players.push(playerOne).push(playerTwo)
+					else
+						puts 'two is older'
+						@players.push(playerTwo).push(playerOne)
+					end
+				end
 			end
 		end
-		puts @players[0].firstName+" is youngest and goes first."
-		puts @players[1].firstName+" is oldest and gets to choose "\
-		"a color. "+@players[1].firstName+", please choose yellow "\
-		"or red:"
-		chooseColor
+		
+		@uiManager.setupPlayerSetupBox(@playerOne,1,
+			method(:setPlayerReady))
+			
+		#@uiManager.setupPlayerSetupBox(playerTwo,2)
+		
+		#puts "Great! You need two players to play"\
+		#	" Connect Four. \n\nPlease enter info"\
+		#	" for Player 1."
+		#playerOneReady = playerOne.collectInfo(1, @uiManager)
+		
+		#puts "And, now enter info for Player 2."
+		#playerTwoReady = playerTwo.collectInfo(2, @uiManager)
+		
+		#if (playerOneReady && playerTwoReady)
+		#	if (playerOne.age < playerTwo.age)
+		#		@players.push(playerOne).push(playerTwo)
+		#	else
+		#		@players.push(playerTwo).push(playerOne)
+		#	end
+		#end
+		#puts @players[0].firstName+" is youngest and goes first."
+		#puts @players[1].firstName+" is oldest and gets to choose "\
+		#"a color. "+@players[1].firstName+", please choose yellow "\
+		#"or red:"
+		#chooseColor
 	end
 	
 	def startGame
-		welcomeBox = Gtk::Box.new(:vertical, 10)
-		
-		greetingBox = Gtk::Box.new(:vertical, 10)
-		greetingLabel = Gtk::Label.new("Hello, and welcome to "\
-										"Connect Four!")
-		greetingBox.add(greetingLabel)
-		
-		gameNameLabelBox = Gtk::Box.new(:vertical,10)
-		gameNameLabel = Gtk::Label.new("Please enter a name for "\
-										"this game:")
-		gameNameLabelBox.add(gameNameLabel)
-		
-		gameNameEntryBox = Gtk::Box.new(:vertical,10)
-		gameNameEntry = Gtk::Entry.new
-		gameNameEntryBox.add(gameNameEntry)
-		
-		gameNameSubmissionBox = Gtk::Box.new(:vertical,10)
-		gameNameSubmissionButton = Gtk::Button.new("Submit")
-		gameNameSubmissionBox.add(gameNameSubmissionButton)
-		
-		welcomeBox.pack_start(greetingBox, false)
-		welcomeBox.pack_start(gameNameLabelBox, false)
-		welcomeBox.pack_start(gameNameEntryBox, false)
-		welcomeBox.pack_start(gameNameSubmissionBox, false)
-		
-		@window.add(welcomeBox)
-		
-		@window.show_all
-		
-		gameNameSubmissionButton.signal_connect "clicked" do
-			md = Gtk::MessageDialog.new(
-				:parent => nil, 
-				:flags => :destroy_with_parent,
-				:type => :info, 
-				:buttons_type => :none, 
-				:message => "Your game name will be "+
-							gameNameEntry.text
-			)
-			
-# see response IDs here: 
-# http://ruby-gnome2.osdn.jp/hiki.cgi?Gtk%3A%3ADialog#ResponseType
-			md.add_button('Confirm',Gtk::ResponseType::ACCEPT)
-			md.add_button('Change',Gtk::ResponseType::REJECT)
-			response = md.run
-			
-			if (response == Gtk::ResponseType::ACCEPT)
-				@window.remove(welcomeBox)
-				@gameName = gameNameEntry.text
-				@window.set_title(@gameName)
-				confirmBox = Gtk::Box.new(:vertical,10)
-				newTitleBox = Gtk::Box.new(:vertical,10)
-				newTitleLabel = Gtk::Label.new("The name of the "\
-												"game is "+@gameName)
-				newTitleBox.add(newTitleLabel)
-				
-				continueBox = Gtk::Box.new(:vertical,10)
-				continueButton = Gtk::Button.new("Continue")
-				continueBox.add(continueButton)
-				
-				confirmBox.pack_start(newTitleBox, false)
-				confirmBox.pack_start(continueBox, false)
-				
-				continueButton.signal_connect "clicked" do
-					playerSetup
-				end
-				
-				@window.add(confirmBox)
-				@window.show_all
-			end
-			
-			md.destroy
-		end
-	end # end startGame
+		# pass anonymous function as callback
+		@uiManager.setupWelcomeBox(Proc.new do playerSetup end)
+	end
 end
 
 if __FILE__ == $0

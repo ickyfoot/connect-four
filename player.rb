@@ -1,18 +1,22 @@
 require_relative '../shared/people/person'
+require_relative 'ui_manager'
 
 class Player < Person
-
 	@id
 	@p_id
 	@username
 	@color # red or yellow, oldest player chooses
-	@piecesRemaining = 21
+	@piecesRemaining
 	
 	attr_accessor :color, :username
 	
-	def initialize; end
+	def initialize
+		@piecesRemaining = 21
+	end
 	
-	def collectInfo
+	def collectInfo(playerNumber, uiManager)
+		uiManager.setupPlayerSetupBox(playerNumber)
+		
 		puts "What's your first name?"
 		firstName = gets
 		@firstName = firstName.chomp
