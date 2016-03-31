@@ -13,7 +13,7 @@ class UIManager
 			finalizeSetupLabelText
 		)
 		finalizeSetupColorEntry = Gtk::Entry.new
-		finalizeSetupColorSubmit = Gtk::Button('Submit')
+		finalizeSetupColorSubmit = Gtk::Button.new('Submit')
 		finalizeSetupBox.pack_start(
 			finalizeSetupLabel,
 			false
@@ -27,30 +27,52 @@ class UIManager
 			false
 		)
 		
-		@window.add(finalizeSetupBox)
-		@window.show_all
-		
 		finalizeSetupColorSubmit.signal_connect "clicked" do
-			if (colors.index finalizeSetupColorSubmit.text)
+			if (colors.index finalizeSetupColorEntry.text)
 				md = Gtk::MessageDialog.new(
 					:parent => nil, 
 					:flags => :destroy_with_parent,
 					:type => :info, 
 					:buttons_type => :none, 
-					:message => "Are you sure you would like to be"+
-						finalizeSetupColorSubmit.text
+					:message => "Are you sure you would like to be "+
+						finalizeSetupColorEntry.text+"?"
 				)
 				md.add_button('Confirm',Gtk::ResponseType::ACCEPT)
 				md.add_button('Change',Gtk::ResponseType::REJECT)
 				response = md.run
 				
 				if (response == Gtk::ResponseType::ACCEPT)
-					players[0].color = finalizeSetupColorSubmit.text
-					players[1].color = if 
-						finalizeSetupColorSubmit.text == 
+					players[1].color = finalizeSetupColorEntry.text
+					players[0].color = if 
+						finalizeSetupColorEntry.text == 
 						'red' then 'yellow' else 'red' end
 					@window.remove(finalizeSetupBox)
+					confirmPlayerInfo = Gtk::Box.new(:vertical,10)
+					confirmPlayerInfoLabel = Gtk::Label.new(
+						'Please review information about the players'
+					)
+					
+					firstPlayerInfo = Gtk::Label.new(
+						"First Player\n"\
+						"Name: "+players[0].name+"\n"\
+						"Color: "+players[0].color
+					)
+					
+					secondPlayerInfo = Gtk::Label.new(
+						"Second Player\n"\
+						"Name: "+players[1].name+"\n"\
+						"Color: "+players[1].color
+					)
+					
+					confirmPlayerInfo.pack_start(
+						confirmPlayerInfoLabel,false
+					)
+					confirmPlayerInfo.pack_start(firstPlayerInfo,false)
+					confirmPlayerInfo.pack_start(secondPlayerInfo,false)
+					@window.add(confirmPlayerInfo)
+					@window.show_all
 				end
+				md.destroy
 			else
 				md = Gtk::MessageDialog.new(
 					:parent => nil, 
@@ -60,11 +82,13 @@ class UIManager
 					:message => "You must choose either "+colors[0]+
 								"or "+colors[1]
 				)
-				md.add_button('Confirm',Gtk::ResponseType::ACCEPT)
-				md.add_button('Change',Gtk::ResponseType::REJECT)
+				md.add_button('Confirm',Gtk::ResponseType::CLOSE)
+				md.run
+				md.destroy
 			end
-			md.destroy
 		end
+		@window.add(finalizeSetupBox)
+		@window.show_all
 	end
 	
 	def newWindow(application)

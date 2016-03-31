@@ -24,6 +24,7 @@ class Engine
 		
 		connect_four.signal_connect "activate" do |application|
 			@uiManager.newWindow(application)
+			startGame
 		end
 		
 		connect_four.run
@@ -82,16 +83,16 @@ class Engine
 				finalizePlayerSetup = ""
 				if (@playerOneReady && @playerTwoReady)
 					if (@playerOne.age > @playerTwo.age)
-						@players.push(@playerOne).push(@playerTwo)
-						finalizeSetupLabelText = 
-							"Player 2 is youngest and goes first. "\
-							"Player 1 gets to choose their color "\
-							"(yellow or red)"
-					else
 						@players.push(@playerTwo).push(@playerOne)
 						finalizeSetupLabelText = 
-							"Player 1 is youngest and goes first. "\
-							"Player 2 gets to choose their color "\
+							@playerTwo.name+" is youngest and goes first. "+
+							@playerOne.name+" gets to choose their color "\
+							"(yellow or red)"
+					else
+						@players.push(@playerOne).push(@playerTwo)
+						finalizeSetupLabelText = 
+							@playerOne.name+" is youngest and goes first. "+
+							@playerTwo.name+" gets to choose their color "\
 							"(yellow or red)"
 							
 					end
@@ -117,5 +118,5 @@ end
 
 if __FILE__ == $0
 	engine = Engine.new
-	engine.startGame
+	#engine.startGame
 end
