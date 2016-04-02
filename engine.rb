@@ -52,7 +52,7 @@ class Engine
 		abort(reason)
 	end
 	
-	# def getOpenGames end
+	# def getOpenGames; end
 	
 	def isWinner; end
 	
@@ -75,7 +75,7 @@ class Engine
 				@playerOne.calculateAge
 				@playerOneReady = status
 				@uiManager.setupPlayerSetupBox(@playerTwo,2,
-					method(:setPlayerReady))
+					method(:setPlayerReady), method(:playerSetup))
 			else
 				@playerTwo.saveInfo
 				@playerTwo.calculateAge
@@ -105,8 +105,10 @@ class Engine
 			end
 		end
 		
+		#restart = self.playerSetup
+		
 		@uiManager.setupPlayerSetupBox(@playerOne,1,
-			method(:setPlayerReady))
+			method(:setPlayerReady), method(:playerSetup))
 		#chooseColor
 	end
 	

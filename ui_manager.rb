@@ -12,6 +12,7 @@ class UIManager
 		finalizeSetupLabel = Gtk::Label.new(
 			finalizeSetupLabelText
 		)
+		finalizeSetupLabel.set_alignment(0,1)
 		finalizeSetupColorEntry = Gtk::Entry.new
 		finalizeSetupColorSubmit = Gtk::Button.new('Submit')
 		finalizeSetupBox.pack_start(
@@ -51,18 +52,21 @@ class UIManager
 					confirmPlayerInfoLabel = Gtk::Label.new(
 						'Please review information about the players'
 					)
+					confirmPlayerInfoLabel.set_alignment(0,1)
 					
 					firstPlayerInfo = Gtk::Label.new(
 						"First Player\n"\
 						"Name: "+players[0].name+"\n"\
 						"Color: "+players[0].color
 					)
+					firstPlayerInfo.set_alignment(0,1)
 					
 					secondPlayerInfo = Gtk::Label.new(
 						"Second Player\n"\
 						"Name: "+players[1].name+"\n"\
 						"Color: "+players[1].color
 					)
+					secondPlayerInfo.set_alignment(0,1)
 					
 					confirmPlayerInfo.pack_start(
 						confirmPlayerInfoLabel,false
@@ -99,20 +103,24 @@ class UIManager
 		return @window
 	end
 	
-	def setupPlayerSetupBox(player, playerNumber, callback)
+	def setupPlayerSetupBox(player, playerNumber, callback, restart)
 		@window.set_title("Player "+playerNumber.to_s+" Setup")
 		playerSetupBox = Gtk::Box.new(:vertical,10)
 		playerSetupLabel = Gtk::Label.new(
 			"Please enter information for Player "+playerNumber.to_s+"."
 		)
+		playerSetupLabel.set_alignment(0,1)
 		
 		playerFirstNameLabel = Gtk::Label.new('First Name:')
+		playerFirstNameLabel.set_alignment(0,1)
 		playerFirstNameEntry = Gtk::Entry.new
 		
 		playerLastNameLabel = Gtk::Label.new('Last Name:')
+		playerLastNameLabel.set_alignment(0,1)
 		playerLastNameEntry = Gtk::Entry.new
 		
 		playerBirthdayLabel = Gtk::Label.new('Birthday:')
+		playerBirthdayLabel.set_alignment(0,1)
 		playerBirthdayEntry = Gtk::Entry.new
 		
 		playerSubmit = Gtk::Button.new('Submit')
@@ -150,6 +158,9 @@ class UIManager
 				player.birthday = playerBirthdayEntry.text
 				@window.remove(playerSetupBox)
 				callback.call(playerNumber, true)
+			else
+				@window.remove(playerSetupBox)
+				restart.call
 			end
 			
 			md.destroy
@@ -162,11 +173,13 @@ class UIManager
 		greetingBox = Gtk::Box.new(:vertical, 10)
 		greetingLabel = Gtk::Label.new("Hello, and welcome to "\
 										"Connect Four!")
+		greetingLabel.set_alignment(0,1)
 		greetingBox.add(greetingLabel)
 		
 		gameNameLabelBox = Gtk::Box.new(:vertical,10)
 		gameNameLabel = Gtk::Label.new("Please enter a name for "\
 										"this game:")
+		gameNameLabel.set_alignment(0,1)
 		gameNameLabelBox.add(gameNameLabel)
 		
 		gameNameEntryBox = Gtk::Box.new(:vertical,10)
@@ -211,6 +224,7 @@ class UIManager
 					"The name of the game is "+@gameName+". Click "\
 					"'Continue' to enter player information."
 				)
+				newTitleLabel.set_alignment(0,1)
 				newTitleBox.add(newTitleLabel)
 				
 				continueBox = Gtk::Box.new(:vertical,10)
@@ -232,10 +246,4 @@ class UIManager
 			md.destroy
 		end
 	end # end setupWelcomeBox
-end
-
-if __FILE__ == $0
-	engine = Engine.new
-	# Person.clearPeople
-	# engine.startGame
 end
