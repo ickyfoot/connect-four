@@ -16,10 +16,25 @@ class Engine
 	
 	def initialize
 		@colors = Array['yellow','red']
+		
+		# :handles_command_line is necessary to support Windows
 		connect_four = Gtk::Application.new(
 			'com.github.ickyfoot.connect_four',
-			:flags_none
+			[ :handles_command_line ]
 		)
+		
+		# signal_connect("comman-line") sets up command-line listener, which is necessary to support Windows
+		connect_four.signal_connect("command-line") { |connect_four, *args| 
+			connect_four.activate
+			0
+		}
+		
+		# ARGV is an array of arguments passed from command line on Windows
+		if (ARGV[0] == 'nevermind') 
+			print 'leaving game'
+			exit
+		end
+		
 		@uiManager = UIManager.new
 		
 		connect_four.signal_connect "activate" do |application|
