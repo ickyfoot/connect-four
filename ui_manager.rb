@@ -29,23 +29,24 @@ class UIManager
 		)
 		
 		finalizeSetupColorSubmit.signal_connect "clicked" do
-			if (colors.index finalizeSetupColorEntry.text)
+			colorSelection = finalizeSetupColorEntry.text.downcase
+			if (colors.index colorSelection)
 				md = Gtk::MessageDialog.new(
 					:parent => nil, 
 					:flags => :destroy_with_parent,
 					:type => :info, 
 					:buttons_type => :none, 
 					:message => "Are you sure you would like to be "+
-						finalizeSetupColorEntry.text+"?"
+						colorSelection+"?"
 				)
 				md.add_button('Confirm',Gtk::ResponseType::ACCEPT)
 				md.add_button('Change',Gtk::ResponseType::REJECT)
 				response = md.run
 				
 				if (response == Gtk::ResponseType::ACCEPT)
-					players[1].color = finalizeSetupColorEntry.text
+					players[1].color = colorSelection
 					players[0].color = if 
-						finalizeSetupColorEntry.text == 
+						colorSelection == 
 						'red' then 'yellow' else 'red' end
 					@window.remove(finalizeSetupBox)
 					confirmPlayerInfo = Gtk::Box.new(:vertical,10)
@@ -84,9 +85,9 @@ class UIManager
 					:type => :info, 
 					:buttons_type => :none, 
 					:message => "You must choose either "+colors[0]+
-								"or "+colors[1]
+								" or "+colors[1]+". You chose \""+colorSelection+"\"."
 				)
-				md.add_button('Confirm',Gtk::ResponseType::CLOSE)
+				md.add_button('OK',Gtk::ResponseType::CLOSE)
 				md.run
 				md.destroy
 			end
